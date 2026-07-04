@@ -1,0 +1,1030 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Rhino Retro II Landing Demo</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #f6f1e9;
+      --muted: #b8b0a5;
+      --line: rgba(246, 241, 233, .17);
+      --red: #b41624;
+      --gold: #d7b56d;
+      --panel: rgba(19, 19, 18, .76);
+      --max: 1240px;
+      --shaftOpen: 1;
+      --shaftFade: .08;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 24% 12%, rgba(180, 22, 36, .35), transparent 28%),
+        radial-gradient(circle at 84% 54%, rgba(215, 181, 109, .16), transparent 28%),
+        linear-gradient(145deg, #030303 0%, #101010 46%, #050505 100%);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(90deg, transparent, rgba(255, 255, 255, .045), transparent),
+        repeating-linear-gradient(90deg, rgba(255, 255, 255, .016) 0 1px, transparent 1px 7px);
+      mix-blend-mode: screen;
+      opacity: .24;
+      z-index: 0;
+    }
+
+    img { display: block; max-width: 100%; }
+    a { color: inherit; text-decoration: none; }
+    button, input { font: inherit; }
+    .page { position: relative; z-index: 1; }
+
+    .nav {
+      position: fixed;
+      inset: 0 0 auto;
+      z-index: 20;
+      display: flex;
+      justify-content: center;
+      padding: 14px 18px;
+      background: linear-gradient(180deg, rgba(0,0,0,.8), rgba(0,0,0,0));
+      backdrop-filter: blur(10px);
+    }
+
+    .nav-inner {
+      width: min(var(--max), 100%);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-logo {
+      width: 132px;
+      height: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 8px 18px rgba(0,0,0,.5));
+    }
+
+    .brand-text {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 850;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      white-space: nowrap;
+    }
+
+        .nav-links { display: flex; gap: 20px; color: var(--muted); font-size: 14px; }
+    .nav-links a {
+      position: relative;
+      transition: color .18s ease, transform .18s ease, filter .18s ease;
+      transform-origin: center;
+    }
+    .nav-links a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -7px;
+      height: 1px;
+      background: #fafafa;
+      transform: scaleX(0);
+      transform-origin: center;
+      transition: transform .18s ease;
+    }
+    .nav-links a:hover, .nav-links a.is-active { color: #fafafa; filter: brightness(1.15); transform: scale(1.08); }
+    .nav-links a:hover::after, .nav-links a.is-active::after { transform: scaleX(1); }
+    .nav-links a:active { transform: scale(.96); }
+    .button {
+      min-height: 42px;
+      padding: 0 17px;
+      border-radius: 4px;
+      border: 1px solid rgba(215, 181, 109, .52);
+      background: linear-gradient(135deg, rgba(180, 22, 36, .96), rgba(83, 8, 16, .96));
+      color: white;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 16px 42px rgba(180, 22, 36, .24);
+      transition: transform .18s ease, filter .18s ease, box-shadow .18s ease;
+      transform-origin: center;
+    }
+    .button:hover, .ghost:hover { filter: brightness(1.15); transform: scale(1.1); }
+    .button:active, .ghost:active { transform: scale(.95); transition-duration: .06s; }
+
+    .ghost {
+      min-height: 42px;
+      padding: 0 17px;
+      border-radius: 4px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.045);
+      transition: transform .18s ease, filter .18s ease, border-color .18s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero {
+      min-height: 88vh;
+      display: grid;
+      align-items: center;
+      padding: 76px 18px 18px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0;
+      height: 18vh;
+      background: linear-gradient(180deg, transparent, rgba(0,0,0,.42));
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      width: min(var(--max), 100%);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(0, .68fr) minmax(500px, 1.32fr);
+      gap: 18px;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-copy-block {
+      max-width: 500px;
+      transform: translateY(-28px);
+    }
+
+    .eyebrow {
+      margin-bottom: 14px;
+      color: var(--gold);
+      text-transform: uppercase;
+      font-size: 12px;
+      font-weight: 850;
+      letter-spacing: .18em;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+    h1 {
+      margin-bottom: 22px;
+      font-size: clamp(42px, 5.25vw, 70px);
+      line-height: .9;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .headline-line { display: block; width: min(600px); }
+
+    .retro-word {
+      display: block;
+      width: min(325px, 76vw);
+      margin-bottom: 40px;
+    }
+
+    .retro-word img {
+      width: 100%;
+      height: auto;
+      filter: drop-shadow(0 0 28px rgba(180, 22, 36, .4));
+    }
+
+    .hero-copy {
+      max-width: 490px;
+      color: var(--muted);
+      font-size: clamp(16px, 1.55vw, 19px);
+      line-height: 1.55;
+      margin-bottom: 28px;
+    }
+
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+    .hero-stage {
+      min-height: 560px;
+      position: relative;
+      perspective: 1100px;
+      margin-right: max(-155px, -9vw);
+      transform: translateY(-44px);
+      margin-left: -18px;
+      isolation: isolate;
+    }
+
+    .hero-piece {
+      position: absolute;
+      left: var(--x);
+      top: var(--y);
+      width: var(--w);
+      z-index: var(--z);
+      opacity: var(--o, 1);
+      filter: brightness(1) blur(var(--blur, 0px)) drop-shadow(0 26px 34px rgba(0,0,0,.72));
+      transform-origin: center;
+      transform: translate(-50%, -50%) translate(var(--dx, 0px), var(--dy, 0px)) rotate(var(--r)) scale(var(--s, 1));
+      transition: filter .22s ease, opacity .22s ease, transform .22s ease;
+      will-change: transform, filter, opacity;
+    }
+    .hero-piece img { width: 100%; height: auto; object-fit: contain; }
+    .hero-piece.is-shaft { --blur: .8px; opacity: .86; }
+    .hero-stage:hover .hero-piece { filter: brightness(.9) blur(var(--blur, 0px)) drop-shadow(0 24px 32px rgba(0,0,0,.7)); }
+        .hero-stage:hover .hero-piece.is-hovered { filter: brightness(1.06) blur(0px) drop-shadow(0 30px 40px rgba(0,0,0,.78)); }
+    .hero-stage::after {
+      content: "";
+      position: absolute;
+      inset: auto 8% 24px 0;
+      height: 100px;
+      background: radial-gradient(ellipse, rgba(0,0,0,.84), transparent 68%);
+      filter: blur(10px);
+      z-index: -1;
+    }
+    .material-callout {
+      margin: -8px 0 24px;
+      color: var(--gold);
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+    .sub-headline {
+      margin-bottom: 18px;
+      color: var(--muted);
+      font-size: clamp(16px, 1.55vw, 22px);
+      font-weight: 800;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .ticker { border-block: 1px solid var(--line); overflow: hidden; background: rgba(0,0,0,.52); margin-top:-40px}
+    .ticker-track {
+      display: flex;
+      gap: 34px;
+      width: max-content;
+      padding: 13px 0;
+      animation: drift 28s linear infinite;
+      color: var(--muted);
+      text-transform: uppercase;
+      font-size: 12px;
+      font-weight: 850;
+      letter-spacing: .14em;
+    }
+    .ticker-track span { white-space: nowrap; }
+    @keyframes drift { to { transform: translateX(-50%); } }
+
+    section { padding: 45px 18px; }
+    .wrap { width: min(var(--max), 100%); margin: 0 auto; }
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 28px;
+      margin-bottom: 34px;
+    }
+    h2 {
+      max-width: 760px;
+      margin-bottom: 0;
+      font-size: clamp(32px, 5vw, 58px);
+      line-height: .96;
+      text-transform: uppercase;
+    }
+    .section-head p { max-width: 400px; color: var(--muted); line-height: 1.6; margin-bottom: 0; }
+
+    .variants { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+    .variant {
+      min-height: 590px;
+      display: grid;
+      grid-template-rows: 390px auto;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.025));
+    }
+    .variant-art {
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 58% 38%, rgba(180,22,36,.26), transparent 44%),
+        linear-gradient(145deg, rgba(255,255,255,.04), rgba(0,0,0,.25));
+    }
+    .variant-art img {
+      position: absolute;
+      max-width: none;
+      filter: brightness(1) drop-shadow(0 18px 24px rgba(0,0,0,.78));
+      transform-origin: center;
+      will-change: transform, filter;
+      transition: transform .22s ease, filter .22s ease;
+    }
+    .variant-art:hover img { filter: brightness(1.06) drop-shadow(0 22px 30px rgba(0,0,0,.82)); }
+    .variant-art .shaft-upper { width: 700px; left: -335px; top: 435px; transform: rotate(-212deg) scale(1); z-index: 1; opacity: 1; }
+    .variant-art .grip { width: 780px; left: -55px; top: 45px; transform: rotate(-31deg) scale(1); z-index: 4; }
+    .variant-art .forearm { width: 850px; left: -380px; bottom: -40px; transform: rotate(148deg) scale(1); z-index: 3; }
+    .variant-art .shaft-lower { width: 650px; right: -275px; bottom: 355px; transform: rotate(-30deg) scale(1); z-index: 2; opacity: 1; }
+    .variant-art:hover .shaft-upper { transform: rotate(-212deg) scale(1.05); }
+    .variant-art:hover .grip { transform: rotate(-31deg) scale(1.05); }
+    .variant-art:hover .forearm { transform: rotate(148deg) scale(1.05); }
+    .variant-art:hover .shaft-lower { transform: rotate(-30deg) scale(1.05); }
+    .variant-body { padding: 22px; }
+    .variant h3 { margin-bottom: 10px; font-size: 25px; text-transform: uppercase; }
+    .variant p { color: var(--muted); line-height: 1.55; margin-bottom: 18px; }
+        .meta { display: flex; justify-content: space-between; align-items: center; gap: 12px; color: var(--gold); font-size: 12px; font-weight: 850; text-transform: uppercase; }
+    .price { color: var(--gold); font-size: 18px; font-weight: 920; }
+    .card-cta { min-height: 36px; padding-inline: 14px; font-size: 12px; }
+
+    .feature-band {
+            position: relative;
+padding-block: 86px;
+      background:
+        linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.76)),
+        radial-gradient(circle at 70% 48%, rgba(215,181,109,.12), transparent 36%);
+      border-block: 1px solid var(--line);
+      overflow: hidden;
+    }
+    .feature-band::after {
+      content: "";
+      position: absolute;
+      inset: 0 0 0 52%;
+      pointer-events: none;
+      z-index: 1;
+      background: linear-gradient(90deg, transparent, rgba(0,0,0,.3) 20%, rgba(0,0,0,.7) 100%);
+      backdrop-filter: blur(1px);
+    }
+    .shaft-row { display: grid; grid-template-columns: minmax(0, 1.18fr) minmax(300px, .82fr); gap: 44px; align-items: center; }
+    .shaft-scene {
+      min-height: 540px;
+      position: relative;
+      opacity: var(--shaftFade);
+      transition: opacity .12s linear;
+      transform: translateZ(0);
+    }
+    .shaft-strip {
+      position: absolute;
+      left: 50%;
+      width: min(1500px, 118vw);
+      max-width: none;
+      filter: drop-shadow(0 22px 28px rgba(0, 0, 0, .76));
+      transform-origin: center;
+      opacity: var(--shaftFade);
+      transition: opacity .12s linear;
+      transform:
+        translate(calc(-50% + (var(--openX) * var(--shaftOpen))), calc(var(--baseY) + (var(--openY) * var(--shaftOpen))))
+        rotate(var(--rot, -17deg));
+    }
+    .shaft-strip.lower { top: 45px; --baseY: 0px; --openX: 475px; --openY: -60px; z-index: 2; }
+    .shaft-strip.upper { top: 200px; --baseY: 0px; --openX: -540px; --openY: 250px; --rot: var(--upperRot, -17deg); z-index: 3; }
+    .shaft-copy { position: relative; z-index: 2; }
+    .shaft-copy h2 { text-shadow: 0 9px 28px rgba(0,0,0,.82), 0 3px 8px rgba(0,0,0,.72), 0 1px 0 rgba(0,0,0,.62); }
+    .feature-list { display: grid; gap: 14px; }
+    .feature-item { border-top: 1px solid var(--line); padding-top: 16px; display: grid; grid-template-columns: 44px 1fr; gap: 14px; }
+    .num { color: var(--red); font-weight: 920; }
+    .feature-item h3 { margin-bottom: 6px; font-size: 18px; }
+    .feature-item p { color: var(--muted); line-height: 1.55; margin-bottom: 0; }
+
+
+    .carbon-section {
+      min-height: 82vh;
+      position: relative;
+      background:
+        radial-gradient(circle at 78% 46%, rgba(215,181,109,.14), transparent 30%),
+        radial-gradient(circle at 20% 20%, rgba(180,22,36,.18), transparent 34%),
+        linear-gradient(180deg, rgba(0,0,0,.84), rgba(8,8,8,.98));
+      border-block: 1px solid var(--line);
+    }
+    .carbon-sticky {
+      position: relative;
+      top: 0;
+      min-height: 82vh;
+      display: grid;
+      align-items: center;
+      overflow: hidden;
+      padding: 72px 18px;
+    }
+    .carbon-inner {
+      width: min(var(--max), 100%);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(620px, 1.12fr) minmax(320px, .88fr);
+      gap: 42px;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+    .carbon-copy {
+      position: relative;
+      z-index: 2;
+      opacity: var(--carbonTextOpacity, 0);
+      transform: translateX(calc(-18px + (18px * var(--carbonTextIn, 0))));
+      transition: opacity .1s linear, transform .1s linear;
+      will-change: opacity, transform;
+    }
+    .carbon-copy h2 {
+      font-size: clamp(36px, 5.8vw, 58px);
+      max-width: 720px;
+      text-shadow: 0 5px 18px rgba(0,0,0,.5);
+    }
+    .carbon-tagline {
+      margin-top: 18px;
+      color: var(--gold);
+      font-size: clamp(14px, 1.35vw, 19px);
+      font-weight: 900;
+      letter-spacing: .16em;
+      line-height: 1.45;
+      text-transform: uppercase;
+    }
+    .carbon-stage {
+      position: absolute;
+      inset: -20px -10vw -20px 18%;
+      z-index: 1;
+      opacity: var(--carbonOpacity, 0);
+      transform: translateX(calc(28px - (28px * var(--carbonIn, 0)))) translateY(calc(16px - (16px * var(--carbonIn, 0))));
+      transition: opacity .1s linear, transform .1s linear;
+      filter: drop-shadow(0 34px 48px rgba(0,0,0,.72));
+      pointer-events: none;
+      will-change: opacity, transform;
+    }
+    .carbon-video {
+      position: absolute;
+      inset: 50% auto auto 58%;
+      width: min(1040px, 82vw);
+      max-width: none;
+      transform: translate(-50%, -50%) rotate(-8deg) scale(.98);
+      transition: transform .1s linear;
+      -webkit-mask-image:
+        linear-gradient(90deg, transparent 0%, #000 12%, #000 88%, transparent 100%),
+        linear-gradient(180deg, transparent 0%, #000 12%, #000 88%, transparent 100%);
+      -webkit-mask-composite: source-in;
+      mask-image:
+        linear-gradient(90deg, transparent 0%, #000 12%, #000 88%, transparent 100%),
+        linear-gradient(180deg, transparent 0%, #000 12%, #000 88%, transparent 100%);
+      mask-composite: intersect;
+      will-change: transform;
+    }
+    .offer { display: grid; grid-template-columns: minmax(0, .9fr) minmax(320px, .62fr); gap: 28px; align-items: center; }
+    .offer-copy { border-left: 3px solid var(--red); padding-left: 24px; }
+    .offer-copy p { color: var(--muted); line-height: 1.65; max-width: 620px; }
+    .offer-kicker { color: var(--gold); text-transform: uppercase; font-size: 18px; font-weight: 900; letter-spacing: .16em; margin-bottom: 12px; }
+    .limited-batch { color: var(--ink); text-transform: uppercase; font-size: clamp(22px, 2.5vw, 36px); line-height: 1; font-weight: 900; letter-spacing: .06em; margin-bottom: 14px; }
+    .offer-copy h2 { font-size: clamp(42px, 5.8vw, 78px); line-height: .92; margin-bottom: 10px; text-shadow: 0 12px 30px rgba(0,0,0,.62); }
+    .signup { border: 1px solid var(--line); background: var(--panel); border-radius: 8px; padding: 22px; box-shadow: 0 24px 70px rgba(0,0,0,.34); }
+    label { display: block; color: var(--muted); font-size: 13px; margin-bottom: 8px; }
+    .field { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+    input { width: 100%; min-height: 44px; border: 1px solid var(--line); border-radius: 4px; background: rgba(0,0,0,.38); color: var(--ink); padding: 0 12px; }
+    .note { margin-top: 12px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+    footer { padding: 32px 18px 44px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+    .footer-inner { width: min(var(--max), 100%); margin: 0 auto; display: flex; justify-content: space-between; gap: 18px; flex-wrap: wrap; }
+
+    @media (max-width: 980px) {
+      .nav-links { display: none; }
+      .hero-inner, .shaft-row, .offer, .carbon-inner { grid-template-columns: 1fr; }
+      .hero-copy-block { max-width: 620px; }
+      .hero-stage { min-height: 610px; order: -1; margin: 6px -70px 0 -90px; }
+      .hero-piece { width: var(--mw, var(--w)); }
+      .variants { grid-template-columns: 1fr; }
+      .variant { grid-template-rows: 390px auto; }
+      .shaft-scene { min-height: 500px; margin-inline: -80px; }
+      .section-head { display: grid; }
+      .carbon-stage { inset: 0 -24vw -10px 2%; }
+      .carbon-video { inset-inline-start: 58%; width: min(920px, 132vw); }
+    }
+    @media (max-width: 560px) {
+      .brand-logo { width: 94px; }
+      .brand-text { display: none; }
+      .hero { padding-top: 82px; }
+      .hero-stage { min-height: 480px; margin-inline: -170px; }
+      .hero-piece { width: var(--sw, var(--mw, var(--w))); }
+      .hero-actions, .field { display: grid; grid-template-columns: 1fr; }
+      .nav-cta { display: none; }
+      section { padding-block: 64px; }
+      .variant { grid-template-rows: 330px auto; }
+      .variant-art .grip { width: 620px; left: -180px; }
+      .variant-art .forearm { width: 720px; left: -200px; }
+      .variant-art .shaft-upper { width: 520px; }
+      .variant-art .shaft-lower { width: 540px; }
+      .shaft-scene { min-height: 420px; margin-inline: -150px; }
+      .shaft-strip { width: 1080px; }
+      .carbon-sticky { padding-top: 76px; }
+      .carbon-stage { inset: 12px -44vw -18px -22%; }
+      .carbon-video { inset-inline-start: 60%; width: 760px; }
+      .offer-copy { padding-left: 16px; }
+    }
+
+    @media (max-width: 1199px) {
+      .nav-inner, .wrap, .hero-inner, .carbon-inner, .footer-inner { width: min(1040px, 100%); }
+      .hero { min-height: auto; padding-top: 88px; }
+      .hero-inner { grid-template-columns: minmax(280px, .72fr) minmax(420px, 1.28fr); gap: 10px; }
+      .hero-copy-block { max-width: 440px; transform: translateY(-8px); }
+      h1 { font-size: clamp(36px, 4.6vw, 56px); }
+      .retro-word { width: min(260px, 54vw); margin-bottom: 28px; }
+      .sub-headline { white-space: normal; }
+      .hero-stage { min-height: 500px; margin-right: -12vw; transform: translateY(-20px); }
+      section { padding-block: 52px; }
+      .variant { min-height: 520px; grid-template-rows: 330px auto; }
+      .feature-band { padding-block: 60px; }
+      .shaft-row { grid-template-columns: minmax(0, 1fr) minmax(300px, .86fr); gap: 22px; }
+      .shaft-scene { min-height: 440px; }
+      .shaft-strip { width: min(1280px, 128vw); }
+      .shaft-strip.lower { --openX: 380px; --openY: -54px; }
+      .shaft-strip.upper { --openX: -430px; --openY: 210px; }
+      .carbon-section, .carbon-sticky { min-height: 72vh; }
+      .carbon-sticky { padding: 56px 18px; }
+      .carbon-inner { grid-template-columns: minmax(480px, 1.05fr) minmax(280px, .95fr); gap: 24px; }
+      .carbon-copy h2 { font-size: clamp(34px, 4.8vw, 52px); }
+      .carbon-stage { inset: -10px -14vw -10px 16%; }
+      .offer-copy h2 { font-size: clamp(40px, 5vw, 64px); }
+    }
+
+    @media (max-width: 1023px) and (orientation: portrait), (max-width: 767px) {
+      .nav { padding: 12px 16px; }
+      .nav-inner { width: 100%; }
+      .brand-logo { width: clamp(92px, 18vw, 118px); }
+      .nav-cta { display: inline-flex; min-height: 36px; padding-inline: 12px; font-size: 12px; }
+      .ticker { margin-top: 0; }
+      section { padding: clamp(42px, 7vw, 64px) 16px; }
+      .section-head { display: grid; margin-bottom: 22px; }
+      .section-head h2, h2 { font-size: clamp(30px, 6vw, 48px); }
+
+      .hero {
+        min-height: auto;
+        padding: 86px 16px 24px;
+      }
+      .hero::after { height: 8vh; }
+      .hero-inner {
+        width: min(680px, 100%);
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
+      }
+      .hero-stage {
+        order: 1;
+        min-height: clamp(340px, 46vh, 520px);
+        margin: 0 -8vw;
+        transform: none;
+        overflow: hidden;
+      }
+      .hero-copy-block {
+        order: 2;
+        max-width: 100%;
+        min-width: 0;
+        transform: none;
+      }
+      .headline-line {
+        width: auto;
+        max-width: 100%;
+      }
+      .hero-piece { width: var(--portraitW, var(--mw, var(--w))) !important; }
+      .hero-piece:nth-child(1) { --x: 74% !important; --y: 17% !important; --portraitW: min(720px, 118vw) !important; }
+      .hero-piece:nth-child(2) { --x: 57% !important; --y: 11% !important; --portraitW: min(780px, 128vw) !important; }
+      .hero-piece:nth-child(3) { --x: 75% !important; --y: 43% !important; --portraitW: min(700px, 116vw) !important; }
+      .hero-piece:nth-child(4) { --x: 58% !important; --y: 35% !important; --portraitW: min(760px, 126vw) !important; }
+      .hero-piece:nth-child(5) { --x: 76% !important; --y: 69% !important; --portraitW: min(700px, 116vw) !important; }
+      .hero-piece:nth-child(6) { --x: 59% !important; --y: 61% !important; --portraitW: min(760px, 126vw) !important; }
+
+      .variants { grid-template-columns: 1fr; gap: 16px; }
+      .variant { min-height: 0; grid-template-rows: clamp(270px, 38vh, 380px) auto; }
+      .variant-body { padding: 18px; }
+      .variant h3 { font-size: clamp(22px, 4.4vw, 26px); }
+      .variant p { font-size: 14px; }
+      .variant-art .grip { width: min(780px, 150vw); left: -12%; top: 8%; }
+      .variant-art .forearm { width: min(840px, 158vw); left: -48%; bottom: -9%; }
+      .variant-art .shaft-upper { width: min(660px, 128vw); left: -38%; top: 92%; }
+      .variant-art .shaft-lower { width: min(650px, 128vw); right: -40%; bottom: 78%; }
+
+      .feature-band { padding-block: clamp(46px, 7vw, 68px); }
+      .feature-band::after { display: none; }
+      .shaft-row {
+        width: min(680px, 100%);
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+      .shaft-scene {
+        order: 1;
+        width: 100%;
+        min-height: clamp(320px, 44vh, 480px);
+        margin-inline: 0;
+        overflow: hidden;
+      }
+      .shaft-copy { order: 2; }
+      .shaft-copy h2 { font-size: clamp(30px, 6vw, 48px); }
+      .feature-item { grid-template-columns: 38px 1fr; }
+      .shaft-strip { width: min(1040px, 178vw); }
+      .shaft-strip.lower { top: 28%; --openX: 190px; --openY: -28px; }
+      .shaft-strip.upper { top: 12%; --openX: -250px; --openY: 150px; }
+
+      .carbon-section, .carbon-sticky { min-height: auto; }
+      .carbon-sticky {
+        min-height: auto;
+        padding: clamp(52px, 8vw, 76px) 16px;
+        overflow: hidden;
+      }
+      .carbon-inner {
+        width: min(680px, 100%);
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+      }
+      .carbon-copy {
+        order: 1;
+        opacity: 1 !important;
+        transform: none !important;
+      }
+      .carbon-copy h2 {
+        max-width: 100%;
+        font-size: clamp(32px, 6.2vw, 48px);
+      }
+      .carbon-stage {
+        order: 2;
+        position: relative;
+        inset: auto;
+        width: 100%;
+        min-height: clamp(300px, 44vh, 460px);
+        overflow: hidden;
+      }
+      .carbon-video {
+        inset: 50% auto auto 50%;
+        width: min(940px, 150vw);
+      }
+
+      .offer {
+        width: min(680px, 100%);
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 24px;
+      }
+      .offer-copy { padding-left: 18px; }
+      .offer-kicker { font-size: 14px; }
+      .limited-batch { font-size: clamp(18px, 4vw, 28px); }
+      .field { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 767px) {
+      .hero { padding-top: 78px; }
+      .hero-stage {
+        min-height: clamp(320px, 44vh, 430px);
+        margin-inline: -18vw;
+      }
+      h1 { font-size: clamp(34px, 9vw, 48px); }
+      .retro-word { width: min(260px, 72vw); margin-bottom: 26px; }
+      .sub-headline { font-size: clamp(14px, 4vw, 17px); }
+      .material-callout { font-size: 12px; }
+      .hero-actions { display: grid; grid-template-columns: 1fr; }
+      .button, .ghost { width: 100%; }
+      .nav-cta { width: auto; }
+      .variant { grid-template-rows: clamp(250px, 62vw, 330px) auto; }
+      .meta { align-items: stretch; }
+      .card-cta { width: auto; }
+      .shaft-scene { min-height: clamp(310px, 48vh, 410px); }
+      .shaft-strip { width: min(900px, 190vw); }
+      .shaft-strip.lower { top: 31%; --openX: 145px; --openY: -18px; }
+      .shaft-strip.upper { top: 12%; --openX: -185px; --openY: 120px; }
+      .carbon-tagline { font-size: clamp(12px, 3.6vw, 15px); }
+      .carbon-stage { min-height: clamp(280px, 42vh, 380px); }
+      .carbon-video { width: min(780px, 176vw); }
+      .offer-copy h2 { font-size: clamp(36px, 10vw, 52px); }
+    }
+
+    @media (max-width: 430px) {
+      .nav { padding-inline: 10px; }
+      .brand-logo { width: 86px; }
+      .nav-cta { min-height: 32px; padding-inline: 10px; font-size: 11px; }
+      .hero { padding-inline: 12px; }
+      .hero-stage { min-height: 315px; margin-inline: -26vw; }
+      section { padding-inline: 12px; }
+      .section-head h2, h2 { font-size: clamp(28px, 8.4vw, 38px); }
+      .variant { grid-template-rows: 250px auto; }
+      .variant-body { padding: 16px; }
+      .feature-item { grid-template-columns: 34px 1fr; gap: 10px; }
+      .shaft-scene { min-height: 300px; }
+      .shaft-strip { width: 760px; }
+      .shaft-strip.lower { --openX: 120px; --openY: -12px; }
+      .shaft-strip.upper { --openX: -145px; --openY: 96px; }
+      .carbon-stage { min-height: 280px; }
+      .signup { padding: 16px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
+      .ticker-track { animation: none; }
+      .carbon-copy { opacity: 1 !important; transform: none !important; }
+      .carbon-stage { opacity: 1 !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <nav class="nav" aria-label="Primary">
+      <div class="nav-inner">
+        <a class="brand" href="#top" aria-label="Rhino Retro II">
+          <img class="brand-logo" src="assets/top-logo.png" alt="Rhino">
+          
+        </a>
+        <div class="nav-links" aria-hidden="true"><a href="#variants">Variants</a><a href="#shaft">Shaft</a><a href="#carbon">Carbon</a><a href="#offer">Offer</a></div>
+        <a class="button nav-cta" href="#offer">Claim Offer 15% Off</a>
+      </div>
+    </nav>
+
+    <main id="top">
+      <header class="hero">
+        <div class="hero-inner">
+          <div class="hero-copy-block">
+            <h1><span class="retro-word"><img src="assets/Retro_2_Logo_Grey_Gradient_light.png" alt="Retro II"></span><span class="headline-line">Timeless Soul</span><span class="headline-line">Precision</span><span class="headline-line">Redefined</span></h1>
+            <div class="sub-headline">Upgraded From The Inside Out</div>
+            <div class="material-callout">Pure Carbon Fiber — Zero Wood</div>
+            <div class="hero-actions"><a class="button" href="#shaft">New Rhino Shaft</a><a class="ghost" href="#variants">Explore Features</a></div>
+          </div>
+          <div class="hero-stage" data-hero-stage>
+            <figure class="hero-piece is-shaft" style="--x: 75%; --y: 26%; --w: min(800px, 72vw); --mw: 760px; --sw: 590px; --r: -10deg; --z: 2;"><img src="assets/products/retro2_cocobolo_forearm_flat_lay.png" alt="Retro II Cocobolo shaft flat lay"></figure>
+            <figure class="hero-piece is-butt" style="--x: 57%; --y: 19%; --w: min(920px, 84vw); --mw: 810px; --sw: 630px; --r: -10deg; --z: 5;"><img src="assets/products/retro2_cocobolo_grip_butt_flat_lay.png" alt="Retro II Cocobolo butt flat lay"></figure>
+            <figure class="hero-piece is-shaft" style="--x: 76%; --y: 48%; --w: min(780px, 70vw); --mw: 740px; --sw: 580px; --r: -10deg; --z: 1;"><img src="assets/products/retro2_ebony_forearm_flat_lay.png" alt="Retro II Ebony shaft flat lay"></figure>
+            <figure class="hero-piece is-butt" style="--x: 58%; --y: 41%; --w: min(900px, 82vw); --mw: 800px; --sw: 620px; --r: -10deg; --z: 4;"><img src="assets/products/retro2_ebony_grip_butt_flat_lay.png" alt="Retro II Ebony butt flat lay"></figure>
+            <figure class="hero-piece is-shaft" style="--x: 77%; --y: 70%; --w: min(790px, 71vw); --mw: 750px; --sw: 590px; --r: -10deg; --z: 1;"><img src="assets/products/retro2_bocote_forearm_flat_lay.png" alt="Retro II Bocote shaft flat lay"></figure>
+            <figure class="hero-piece is-butt" style="--x: 59%; --y: 63%; --w: min(910px, 83vw); --mw: 805px; --sw: 625px; --r: -10deg; --z: 3;"><img src="assets/products/retro2_bocote_grip_butt_flat_lay.png" alt="Retro II Bocote butt flat lay"></figure>
+          </div>
+        </div>
+      </header>
+
+      <div class="ticker" aria-hidden="true"><div class="ticker-track"><span>LAUCHING OFFER 15% OFF</span><span>RETRO II</span><span>NEW RETRO</span><span>LATEST VERSION FROM OUR BESTSELLER: RHINO CARBON SHAFT</span><span>PREMIUM JAPANESE CARBON FIBER</span><span>PURE CARBON FIBER — ZERO WOOD</span><span>LAUCHING OFFER 15% OFF</span><span>RETRO II</span><span>NEW RETRO</span><span>LATEST VERSION FROM OUR BESTSELLER: RHINO CARBON SHAFT</span><span>PREMIUM JAPANESE CARBON FIBER</span><span>PURE CARBON FIBER — ZERO WOOD</span></div></div>
+
+      <section id="variants">
+        <div class="wrap">
+          <div class="section-head"><h2>SELECT THE FINISH THAT SPEAKS TO YOUR IDENTITY</h2></div>
+          <div class="variants">
+            <article class="variant">
+              <div class="variant-art">
+                <img class="shaft-upper" src="assets/products/retro2_upper_shaft_flat_angled_01.png" alt="Upper shaft angled detail">
+                <img class="grip" src="assets/products/retro2_cocobolo_grip_butt_angled.png" alt="Cocobolo grip detail">
+                <img class="forearm" src="assets/products/retro2_cocobolo_forearm_angled_01.png" alt="Cocobolo forearm detail">
+                <img class="shaft-lower" src="assets/products/retro2_lower_shaft__125_angled.png" alt="Lower shaft angled detail">
+              </div>
+              <div class="variant-body"><h3>Cocobolo</h3><p>COCOBOLOA deep red weave radiating warm authority—crafted not to be noticed, but to be remembered.</p><div class="meta"><span class="price">$529</span><a class="button card-cta" href="#offer">Claim Offer</a></div></div>
+            </article>
+            <article class="variant">
+              <div class="variant-art">
+                <img class="shaft-upper" src="assets/products/retro2_upper_shaft_flat_angled_01.png" alt="Upper shaft angled detail">
+                <img class="grip" src="assets/products/retro2_ebony_grip_butt_angled.png" alt="Ebony grip detail">
+                <img class="forearm" src="assets/products/retro2_ebony_forearm_angled_01.png" alt="Ebony forearm detail">
+                <img class="shaft-lower" src="assets/products/retro2_lower_shaft__125_angled.png" alt="Lower shaft angled detail">
+              </div>
+              <div class="variant-body"><h3>Ebony</h3><p>EBONYA deep black gloss cut by razor-sharp lines—bringing a cold, calculated precision to your table identity.</p><div class="meta"><span class="price">$529</span><a class="button card-cta" href="#offer">Claim Offer</a></div></div>
+            </article>
+            <article class="variant">
+              <div class="variant-art">
+                <img class="shaft-upper" src="assets/products/retro2_upper_shaft_flat_angled_01.png" alt="Upper shaft angled detail">
+                <img class="grip" src="assets/products/retro2_bocote_grip_butt_angled.png" alt="Bocote grip detail">
+                <img class="forearm" src="assets/products/retro2_bocote_forearm_angled_01.png" alt="Bocote forearm detail">
+                <img class="shaft-lower" src="assets/products/retro2_lower_shaft__125_angled.png" alt="Lower shaft angled detail">
+              </div>
+              <div class="variant-body"><h3>Bocote</h3><p>BOCOTEAn intricate golden grain with graphic streaks—made for the connoisseur who commands appreciation up close.</p><div class="meta"><span class="price">$529</span><a class="button card-cta" href="#offer">Claim Offer</a></div></div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="feature-band" id="shaft" data-shaft-section>
+        <div class="wrap shaft-row">
+          <div class="shaft-scene" aria-label="Shaft components moving together on scroll">
+            <img class="shaft-strip upper" src="assets/products/retro2_upper_shaft_flat_angled_02.png" alt="Upper shaft angled detail">
+            <img class="shaft-strip lower" src="assets/products/retro2_lower_shaft__125_angled.png" alt="Lower shaft angled detail">
+          </div>
+          <div class="shaft-copy">
+            <div class="eyebrow">Shaft and finish</div>
+            <h2>Clean hit, clean detail.</h2>
+            <div class="feature-list">
+              <div class="feature-item"><div class="num">01</div><div><h3>Premium Japanese carbon fiber</h3><p>Delivering absolute stability and long-term durability for RETRÔ II, ensuring peak precision in every single shot.</p></div></div>
+              <div class="feature-item"><div class="num">02</div><div><h3>Latest upgraded RHINO shaft construction</h3><p>This collection achieves zero-deflection accuracy and absolute stability, delivering an unmatched, consistent playing experience.</p></div></div>
+              <div class="feature-item"><div class="num">03</div><div><h3>Next-generation Time Beyond Tip</h3><p>A breakthrough material engineered for lasting durability, confident grip, and crisp, precise feedback.</p></div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <section class="carbon-section" id="carbon" data-carbon-section>
+        <div class="carbon-sticky">
+          <div class="carbon-inner">
+            <div class="carbon-copy">
+              <h2>MULTI-DIRECTIONAL PROPRIETARY WEAVE</h2>
+              <div class="carbon-tagline">ENGINEERED FOR ABSOLUTE PERFORMANCE AND LIFELONG STABILITY</div>
+            </div>
+            <div class="carbon-stage" aria-label="Carbon fiber transformation scroll video">
+              <video class="carbon-video" muted playsinline preload="auto">
+                <source src="assets/Carbon%20fiber%20tranfromation.mp4" type="video/mp4">
+              </video>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section id="offer"><div class="wrap offer"><div class="offer-copy"><div class="offer-kicker">Launch Offer</div><div class="limited-batch">Limited first batch</div><h2>15% off<br>free shipping.</h2><p>Pure Carbon Fiber — Zero Wood. Built around the latest Rhino carbon shaft experience.</p></div><form class="signup" onsubmit="event.preventDefault(); this.querySelector('.note').textContent='Offer request received.';"><div class="field"><input id="email" name="email" type="email" placeholder="you@example.com" required><button class="button" type="submit">Claim Offer</button></div><div class="note">By clicking, you agree to receive launch updates and exclusive privileges from Rhino.</div></form></div></section>
+    </main>
+    <footer><div class="footer-inner"><span>Pure Carbon Fiber — Zero Wood</span><span><a href="https://rhino-billiards.com">www.rhino-billiards.com</a></span></div></footer>
+  </div>
+
+  <script>
+    const heroStage = document.querySelector('[data-hero-stage]');
+    const heroPieces = [...document.querySelectorAll('.hero-piece')];
+    const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let pointerX = 0;
+    let pointerY = 0;
+    let pointerActive = false;
+
+    if (heroStage) {
+      heroStage.addEventListener('pointermove', event => {
+        const rect = heroStage.getBoundingClientRect();
+        pointerX = (event.clientX - rect.left) / rect.width - .5;
+        pointerY = (event.clientY - rect.top) / rect.height - .5;
+        pointerActive = true;
+      });
+      heroStage.addEventListener('pointerleave', () => {
+        pointerActive = false;
+        heroPieces.forEach(piece => piece.classList.remove('is-hovered'));
+      });
+      heroPieces.forEach(piece => {
+        piece.addEventListener('pointerenter', () => {
+          piece.classList.add('is-hovered');
+        });
+        piece.addEventListener('pointerleave', () => {
+          piece.classList.remove('is-hovered');
+        });
+      });
+    }
+
+    function animateHeroPieces(time) {
+      heroPieces.forEach((piece, index) => {
+        const wave = Math.sin(time / 1250 + index * .82);
+        const driftX = wave * 5 + (pointerActive ? pointerX * (12 + index) : 0);
+        const driftY = Math.cos(time / 1450 + index * .7) * 3 + (pointerActive ? pointerY * (7 + index * .6) : 0);
+        const scale = piece.classList.contains('is-hovered') ? 1.05 : 1;
+        piece.style.setProperty('--dx', `${driftX.toFixed(2)}px`);
+        piece.style.setProperty('--dy', `${driftY.toFixed(2)}px`);
+        piece.style.setProperty('--s', scale);
+      });
+      requestAnimationFrame(animateHeroPieces);
+    }
+    if (!reducedMotionQuery.matches) {
+      requestAnimationFrame(animateHeroPieces);
+    }
+
+    const shaftSection = document.querySelector('[data-shaft-section]');
+    function clamp(value, min, max) { return Math.min(max, Math.max(min, value)); }
+    function easeInOut(value) { return value < .5 ? 2 * value * value : 1 - Math.pow(-2 * value + 2, 2) / 2; }
+    function updateShaftMotion() {
+      if (!shaftSection) return;
+      if (reducedMotionQuery.matches) {
+        shaftSection.style.setProperty('--shaftOpen', '1');
+        shaftSection.style.setProperty('--shaftFade', '1');
+        shaftSection.style.setProperty('--upperRot', '-17deg');
+        return;
+      }
+      const rect = shaftSection.getBoundingClientRect();
+      const viewport = window.innerHeight || document.documentElement.clientHeight;
+      const travel = viewport + rect.height;
+      const raw = (viewport - rect.top) / travel;
+      const progress = clamp(raw, 0, 1);
+      const enterStart = .1;
+      const lockAtCenter = .5;
+      const releaseAfterHold = .66;
+      const startOpen = 1.7;
+      const enter = easeInOut(clamp((progress - enterStart) / (lockAtCenter - enterStart), 0, 1));
+      const exit = clamp((progress - releaseAfterHold) / (1 - releaseAfterHold), 0, 1);
+      const exitEase = easeInOut(exit);
+      const holdOpen = startOpen - (startOpen - 1) * enter;
+      const open = progress < releaseAfterHold ? holdOpen : 1 - 1.08 * exitEase;
+      const fade = progress < releaseAfterHold ? enter : clamp(1 - exitEase, 0, 1);
+      const upperRot = -17 + exitEase * 15;
+      shaftSection.style.setProperty('--shaftOpen', open.toFixed(3));
+      shaftSection.style.setProperty('--shaftFade', fade.toFixed(3));
+      shaftSection.style.setProperty('--upperRot', `${upperRot.toFixed(2)}deg`);
+    }
+    updateShaftMotion();
+    window.addEventListener('scroll', updateShaftMotion, { passive: true });
+    window.addEventListener('resize', updateShaftMotion);
+
+
+    const carbonSection = document.querySelector('[data-carbon-section]');
+    const carbonVideo = document.querySelector('.carbon-video');
+    function updateCarbonMotion() {
+      if (!carbonSection) return;
+      if (reducedMotionQuery.matches) {
+        carbonSection.style.setProperty('--carbonOpacity', '1');
+        carbonSection.style.setProperty('--carbonIn', '1');
+        carbonSection.style.setProperty('--carbonTextOpacity', '1');
+        carbonSection.style.setProperty('--carbonTextIn', '1');
+        if (carbonVideo) {
+          carbonVideo.pause();
+          carbonVideo.currentTime = 0;
+        }
+        return;
+      }
+      const rect = carbonSection.getBoundingClientRect();
+      const viewport = window.innerHeight || document.documentElement.clientHeight;
+      const travel = viewport + rect.height;
+      const progress = clamp((viewport - rect.top) / travel, 0, 1);
+      const fadeStart = .12;
+      const playAt = .25;
+      const holdEnd = .7;
+      const fadeIn = easeInOut(clamp((progress - fadeStart) / (playAt - fadeStart), 0, 1));
+      const holdProgress = clamp((progress - playAt) / (holdEnd - playAt), 0, 1);
+      const exitProgress = clamp((progress - holdEnd) / (1 - holdEnd), 0, 1);
+      const enter = progress < playAt ? fadeIn : clamp(1 - easeInOut(exitProgress), 0, 1);
+      const textIn = clamp((viewport * .82 - rect.top) / (viewport * .24), 0, 1);
+      carbonSection.style.setProperty('--carbonOpacity', enter.toFixed(3));
+      carbonSection.style.setProperty('--carbonIn', progress < playAt ? fadeIn.toFixed(3) : (1 - holdProgress * .04).toFixed(3));
+      carbonSection.style.setProperty('--carbonTextOpacity', textIn.toFixed(3));
+      carbonSection.style.setProperty('--carbonTextIn', textIn.toFixed(3));
+      if (carbonVideo) {
+        carbonVideo.muted = true;
+        carbonVideo.playsInline = true;
+        if (progress >= playAt && progress <= holdEnd && carbonVideo.paused) {
+          const playRequest = carbonVideo.play();
+          if (playRequest) {
+            playRequest.catch(() => {});
+          }
+        }
+        if (progress < fadeStart || rect.bottom < viewport * .08) {
+          carbonVideo.pause();
+          carbonVideo.currentTime = 0;
+        }
+      }
+    }
+    updateCarbonMotion();
+    if (carbonVideo) {
+      carbonVideo.addEventListener('loadedmetadata', updateCarbonMotion);
+    }
+    window.addEventListener('scroll', updateCarbonMotion, { passive: true });
+    window.addEventListener('resize', updateCarbonMotion);
+    window.addEventListener('hashchange', () => {
+      requestAnimationFrame(() => {
+        updateShaftMotion();
+        updateCarbonMotion();
+      });
+    });
+    const navLinks = [...document.querySelectorAll('.nav-links a[href^="#"]')];
+    const navSections = navLinks
+      .map(link => ({ link, section: document.querySelector(link.getAttribute('href')) }))
+      .filter(item => item.section);
+
+    function updateActiveNav() {
+      const marker = window.innerHeight * .38;
+      let active = null;
+      navSections.forEach(item => {
+        const rect = item.section.getBoundingClientRect();
+        if (rect.top <= marker && rect.bottom >= marker) active = item;
+      });
+      navLinks.forEach(link => link.classList.toggle('is-active', active?.link === link));
+    }
+    navLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        navLinks.forEach(item => item.classList.remove('is-active'));
+        link.classList.add('is-active');
+      });
+    });
+    updateActiveNav();
+    window.addEventListener('scroll', updateActiveNav, { passive: true });
+    window.addEventListener('resize', updateActiveNav);
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
