@@ -286,7 +286,7 @@
     .ticker-track span { white-space: nowrap; }
     @keyframes drift { to { transform: translateX(-50%); } }
 
-    section { padding: 45px 18px; }
+    section { padding: 45px 18px; scroll-margin-top: 74px; }
     .wrap { width: min(var(--max), 100%); margin: 0 auto; }
     .section-head {
       display: flex;
@@ -580,12 +580,15 @@ padding-block: 86px;
         order: 2;
         max-width: 100%;
         min-width: 0;
+        text-align: center;
         transform: none;
       }
+      .retro-word { margin-inline: auto; }
       .headline-line {
         width: auto;
         max-width: 100%;
       }
+      .hero-actions { justify-content: center; }
       .hero-piece { width: var(--portraitW, var(--mw, var(--w))) !important; }
       .hero-piece:nth-child(1) { --x: 74% !important; --y: 17% !important; --portraitW: min(720px, 118vw) !important; }
       .hero-piece:nth-child(2) { --x: 57% !important; --y: 11% !important; --portraitW: min(780px, 128vw) !important; }
@@ -594,15 +597,28 @@ padding-block: 86px;
       .hero-piece:nth-child(5) { --x: 76% !important; --y: 69% !important; --portraitW: min(700px, 116vw) !important; }
       .hero-piece:nth-child(6) { --x: 59% !important; --y: 61% !important; --portraitW: min(760px, 126vw) !important; }
 
-      .variants { grid-template-columns: 1fr; gap: 16px; }
-      .variant { min-height: 0; grid-template-rows: clamp(270px, 38vh, 380px) auto; }
+      #variants .section-head {
+        justify-items: center;
+        text-align: center;
+      }
+      #variants .section-head h2 { margin-inline: auto; }
+      .variants {
+        grid-template-columns: 1fr;
+        justify-items: center;
+        gap: 16px;
+      }
+      .variant {
+        width: min(100%, 520px);
+        min-height: 0;
+        grid-template-rows: clamp(270px, 38vh, 380px) auto;
+      }
       .variant-body { padding: 18px; }
       .variant h3 { font-size: clamp(22px, 4.4vw, 26px); }
       .variant p { font-size: 14px; }
-      .variant-art .grip { width: min(780px, 150vw); left: -12%; top: 8%; }
-      .variant-art .forearm { width: min(840px, 158vw); left: -48%; bottom: -9%; }
-      .variant-art .shaft-upper { width: min(660px, 128vw); left: -38%; top: 92%; }
-      .variant-art .shaft-lower { width: min(650px, 128vw); right: -40%; bottom: 78%; }
+      .variant-art .grip { width: min(780px, 150vw); left: -10%; top: 10%; }
+      .variant-art .forearm { width: min(840px, 158vw); left: -60%; bottom: -10%; }
+      .variant-art .shaft-upper { width: min(660px, 128vw); left: -55%; top: 115%; }
+      .variant-art .shaft-lower { width: min(650px, 128vw); right: -40%; bottom: 90%; }
 
       .feature-band { padding-block: clamp(46px, 7vw, 68px); }
       .feature-band::after { display: none; }
@@ -712,7 +728,7 @@ padding-block: 86px;
       .feature-item { grid-template-columns: 34px 1fr; gap: 10px; }
       .shaft-scene { min-height: 300px; }
       .shaft-strip { width: 760px; }
-      .shaft-strip.lower { --openX: 120px; --openY: -12px; }
+      .shaft-strip.lower { --openX: 200px; --openY: 0px; }
       .shaft-strip.upper { --openX: -145px; --openY: 96px; }
       .carbon-stage { min-height: 280px; }
       .signup { padding: 16px; }
